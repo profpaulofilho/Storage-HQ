@@ -1,0 +1,76 @@
+body {
+  background: #101114;
+  color: #f3f4f6;
+}
+.hero-banner {
+  background:
+    linear-gradient(135deg, rgba(153,27,27,.85), rgba(17,24,39,.92)),
+    url('../images/comic_collage.jpg') center/cover;
+}
+.card, .table, .alert, .navbar, .dropdown-menu {
+  border-radius: 1rem;
+}
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  padding: 1rem;
+  background: linear-gradient(180deg, #191c22, #111318);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 1rem;
+  box-shadow: 0 12px 30px rgba(0,0,0,.18);
+}
+.stat-card span {
+  color: #9ca3af;
+  font-size: .9rem;
+}
+.stat-card strong {
+  font-size: 1.4rem;
+}
+.comic-card {
+  background: #171a20;
+  border: 1px solid rgba(255,255,255,.06);
+}
+.cover-img {
+  height: 300px;
+  object-fit: cover;
+}
+.empty-state {
+  padding: 3rem;
+  text-align: center;
+  background: #171a20;
+  border-radius: 1rem;
+  border: 1px dashed rgba(255,255,255,.15);
+  color: #cbd5e1;
+}
+.recent-item {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  text-decoration: none;
+  color: inherit;
+  padding: .9rem 1rem;
+  background: #171a20;
+  border-radius: .85rem;
+  border: 1px solid rgba(255,255,255,.08);
+}
+.recent-item span {
+  color: #9ca3af;
+  font-size: .9rem;
+}
+.form-preview {
+  max-width: 220px;
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,.1);
+}
+.btn-outline-light.border {
+  border-color: rgba(255,255,255,.25) !important;
+}
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-color: #f3f4f6;
+  --bs-table-border-color: rgba(255,255,255,.08);
+}
+code {
+  color: #fecaca;
+}

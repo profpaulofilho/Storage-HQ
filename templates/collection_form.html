@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if collection else 'Nova' }} coleção | {{ app_title }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card shadow-sm"><div class="card-body p-4">
+      <h2 class="h4 mb-4">{{ 'Editar coleção' if collection else 'Nova coleção' }}</h2>
+      <form method="post" enctype="multipart/form-data" class="vstack gap-3">
+        <div>
+          <label class="form-label">Nome da coleção</label>
+          <input class="form-control" name="name" value="{{ collection.name if collection else '' }}" required>
+        </div>
+        <div>
+          <label class="form-label">Imagem de capa</label>
+          <input class="form-control" type="file" name="cover_image" accept="image/*">
+        </div>
+        {% if collection and collection.cover_image %}
+          <img class="form-preview" src="{{ url_for('uploaded_file', filename=collection.cover_image) }}" alt="capa atual">
+        {% endif %}
+        <div class="d-flex gap-2">
+          <button class="btn btn-danger">Salvar</button>
+          <a class="btn btn-outline-secondary" href="{{ url_for('dashboard') if current_user else url_for('index') }}">Cancelar</a>
+        </div>
+      </form>
+    </div></div>
+  </div>
+</div>
+{% endblock %}

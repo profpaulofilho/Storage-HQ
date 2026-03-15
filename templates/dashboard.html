@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Painel | {{ app_title }}{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="h4 mb-1">Painel administrativo</h2>
+    <p class="text-secondary mb-0">Gerencie coleções, HQs e usuários administradores.</p>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-danger" href="{{ url_for('collection_new') }}">Nova coleção</a>
+    {% if current_user.is_admin %}
+      <a class="btn btn-outline-warning" href="{{ url_for('admin_user_new') }}">Novo admin</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="stat-card"><span>Coleções</span><strong>{{ stats.collections }}</strong></div></div>
+  <div class="col-md-3"><div class="stat-card"><span>HQs</span><strong>{{ stats.comics }}</strong></div></div>
+  <div class="col-md-3"><div class="stat-card"><span>Admins</span><strong>{{ stats.admins }}</strong></div></div>
+  <div class="col-md-3"><div class="stat-card"><span>Valor total</span><strong>{{ stats.total_value|currency('R$') }}</strong></div></div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="h5 mb-3">Coleções</h3>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead><tr><th>Nome</th><th>HQs</th><th></th></tr></thead>
+            <tbody>
+              {% for collection in collections %}
+              <tr>
+                <td>{{ collection.name }}</td>
+                <td>{{ collection.comic_count }}</td>
+                <td class="text-end"><a class="btn btn-sm btn-outline-danger" href="{{ url_for('collection_detail', collection_id=collection.id) }}">Abrir</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="3" class="text-secondary">Nenhuma coleção cadastrada.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h3 class="h5 mb-3">HQs recentes</h3>
+        <div class="vstack gap-3">
+          {% for comic in recent_comics %}
+            <a class="recent-item" href="{{ url_for('comic_detail', comic_id=comic.id) }}">
+              <strong>{{ comic.name }} #{{ comic.edition_number }}</strong>
+              <span>{{ comic.collection_name }}</span>
+            </a>
+          {% else %}
+            <div class="text-secondary">Nenhuma HQ cadastrada.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

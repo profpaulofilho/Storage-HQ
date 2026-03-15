@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar' if comic else 'Nova' }} HQ | {{ app_title }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-xl-9">
+    <div class="card shadow-sm"><div class="card-body p-4">
+      <h2 class="h4 mb-4">{{ 'Editar HQ' if comic else 'Nova HQ' }} — {{ collection.name }}</h2>
+      <form method="post" enctype="multipart/form-data" class="row g-3">
+        <div class="col-md-6"><label class="form-label">Nome</label><input class="form-control" name="name" value="{{ comic.name if comic else '' }}" required></div>
+        <div class="col-md-3"><label class="form-label">Número da edição</label><input class="form-control" name="edition_number" value="{{ comic.edition_number if comic else '' }}" required></div>
+        <div class="col-md-3"><label class="form-label">Editora</label><input class="form-control" name="publisher" value="{{ comic.publisher if comic else '' }}"></div>
+        <div class="col-md-4"><label class="form-label">Data de publicação</label><input class="form-control" type="date" name="publication_date" value="{{ comic.publication_date if comic else '' }}"></div>
+        <div class="col-md-4"><label class="form-label">Valor de lançamento</label><input class="form-control" name="launch_value" value="{{ comic.launch_value if comic and comic.launch_value is not none else '' }}"></div>
+        <div class="col-md-4"><label class="form-label">Moeda</label><input class="form-control" name="currency_type" value="{{ comic.currency_type if comic else 'R$' }}"></div>
+        <div class="col-md-4"><label class="form-label">Valor atual</label><input class="form-control" name="current_value" value="{{ comic.current_value if comic and comic.current_value is not none else '' }}"></div>
+        <div class="col-md-8"><label class="form-label">Imagem da capa</label><input class="form-control" type="file" name="cover_image" accept="image/*"></div>
+        <div class="col-12 form-check ms-2"><input class="form-check-input" type="checkbox" name="is_special_edition" {% if comic and comic.is_special_edition %}checked{% endif %}><label class="form-check-label">Edição especial</label></div>
+        <div class="col-12"><label class="form-label">Sinopse</label><textarea class="form-control" rows="4" name="synopsis">{{ comic.synopsis if comic else '' }}</textarea></div>
+        <div class="col-12"><label class="form-label">Comentários do colecionador</label><textarea class="form-control" rows="3" name="collector_comments">{{ comic.collector_comments if comic else '' }}</textarea></div>
+        <div class="col-12"><label class="form-label">Curiosidades</label><textarea class="form-control" rows="3" name="trivia">{{ comic.trivia if comic else '' }}</textarea></div>
+        {% if comic and comic.cover_image %}
+          <div class="col-12"><img class="form-preview" src="{{ url_for('uploaded_file', filename=comic.cover_image) }}" alt="capa atual"></div>
+        {% endif %}
+        <div class="col-12 d-flex gap-2">
+          <button class="btn btn-danger">Salvar</button>
+          <a class="btn btn-outline-secondary" href="{{ url_for('collection_detail', collection_id=collection.id) }}">Cancelar</a>
+        </div>
+      </form>
+    </div></div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}{{ comic.name }} | {{ app_title }}{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap gap-3 justify-content-between align-items-start mb-4">
+  <div>
+    <a class="small text-decoration-none" href="{{ url_for('collection_detail', collection_id=collection.id) }}">← Voltar para {{ collection.name }}</a>
+    <h2 class="h3 mt-2 mb-1">{{ comic.name }} #{{ comic.edition_number }}</h2>
+    <p class="text-secondary mb-0">{{ comic.publisher or 'Editora não informada' }}</p>
+  </div>
+  {% if current_user and current_user.is_admin %}
+  <div class="d-flex gap-2 flex-wrap">
+    <a class="btn btn-outline-light border" href="{{ url_for('comic_edit', comic_id=comic.id) }}">Editar HQ</a>
+    <form method="post" action="{{ url_for('comic_delete', comic_id=comic.id) }}" onsubmit="return confirm('Excluir esta HQ?');">
+      <button class="btn btn-outline-danger">Excluir HQ</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    {% if comic.cover_image %}
+      <img class="img-fluid rounded shadow-sm" src="{{ url_for('uploaded_file', filename=comic.cover_image) }}" alt="{{ comic.name }}">
+    {% else %}
+      <img class="img-fluid rounded shadow-sm" src="{{ url_for('static', filename='images/imagem1.jpg') }}" alt="sem capa">
+    {% endif %}
+  </div>
+  <div class="col-lg-8">
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6"><strong>Edição especial:</strong> {{ 'Sim' if comic.is_special_edition else 'Não' }}</div>
+          <div class="col-md-6"><strong>Publicação:</strong> {{ comic.publication_date or '—' }}</div>
+          <div class="col-md-6"><strong>Valor de lançamento:</strong> {{ comic.launch_value|currency(comic.currency_type or 'R$') }}</div>
+          <div class="col-md-6"><strong>Valor atual:</strong> {{ comic.current_value|currency('R$') }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="card shadow-sm mb-3"><div class="card-body"><h3 class="h5">Sinopse</h3><p class="mb-0">{{ comic.synopsis or 'Sem sinopse cadastrada.' }}</p></div></div>
+    <div class="card shadow-sm mb-3"><div class="card-body"><h3 class="h5">Comentários do colecionador</h3><p class="mb-0">{{ comic.collector_comments or 'Sem comentários cadastrados.' }}</p></div></div>
+    <div class="card shadow-sm"><div class="card-body"><h3 class="h5">Curiosidades</h3><p class="mb-0">{{ comic.trivia or 'Sem curiosidades cadastradas.' }}</p></div></div>
+  </div>
+</div>
+{% endblock %}
