@@ -16,7 +16,3 @@ services:
         value: STAN_ADM
       - key: DEFAULT_ADMIN_PASSWORD
         sync: false
-    disks:
-      - name: storage-hqs-data
-        mountPath: /var/data
-        sizeGB: 1
