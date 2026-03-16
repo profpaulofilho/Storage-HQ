@@ -68,13 +68,25 @@ def register_filters(app: Flask):
 
 def register_hooks(app: Flask):
     @app.before_request
-    def load_logged_user():
+    def load_logged_in_user():
         user_id = session.get('user_id')
-        g.user = get_user_by_id(user_id) if user_id else None
+        g.user = None
+        if user_id:
+            g.user = get_user_by_id(user_id)
 
     @app.context_processor
     def inject_globals():
-        return {'app_title': app.config['APP_TITLE'], 'current_user': g.get('user')}
+        stats = None
+        try:
+            stats = get_stats()
+        except Exception:
+            stats = None
+
+        return {
+            'app_title': app.config['APP_TITLE'],
+            'current_user': g.get('user'),
+            'stats': stats
+        }
 
 
 
