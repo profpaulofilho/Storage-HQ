@@ -598,7 +598,7 @@ def save_upload(file_storage, subdir='misc'):
     extension = filename.rsplit('.', 1)[1].lower()
     unique_name = f'{uuid4().hex}.{extension}'
 
-if drive_enabled():
+    if drive_enabled():
         folder_id = os.getenv('GOOGLE_DRIVE_FOLDER_ID')
 
         if not folder_id:
