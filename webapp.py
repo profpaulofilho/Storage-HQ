@@ -638,6 +638,24 @@ def save_upload(file_storage, subdir='misc'):
     file_storage.save(absolute_path)
     return f'uploads/{subdir}/{unique_name}'
 
+    if drive_enabled():
+        folder_id = os.getenv('GOOGLE_DRIVE_FOLDER_ID')
+
+        if not folder_id:
+            raise ValueError('GOOGLE_DRIVE_FOLDER_ID não configurado no ambiente.')
+
+        try:
+            uploaded = upload_bytes_to_drive(file_storage, unique_name, folder_id)
+            return f"https://drive.google.com/uc?id={uploaded['id']}"
+        except Exception as exc:
+            raise ValueError(f'Erro ao enviar imagem para o Google Drive: {exc}')
+
+    target_dir = current_app.config['UPLOAD_FOLDER'] / subdir
+    target_dir.mkdir(parents=True, exist_ok=True)
+    absolute_path = target_dir / unique_name
+    file_storage.save(absolute_path)
+    return f'uploads/{subdir}/{unique_name}'
+
 def delete_file(relative_path: str | None):
     if not relative_path:
         return
