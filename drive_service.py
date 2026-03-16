@@ -1,44 +1,70 @@
-import os
 import json
+import os
+import tempfile
+
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-SCOPES = ['https://www.googleapis.com/auth/drive.file']
+SCOPES = ['https://www.googleapis.com/auth/drive']
+
+
+def drive_enabled():
+    return os.getenv('GOOGLE_DRIVE_ENABLED', 'false').lower() == 'true'
+
 
 def get_drive_service():
-    json_data = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON")
-
+    json_data = os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
     if not json_data:
         return None
 
     creds_dict = json.loads(json_data)
-
     credentials = service_account.Credentials.from_service_account_info(
-        creds_dict, scopes=SCOPES
+        creds_dict,
+        scopes=SCOPES
     )
-
-    service = build("drive", "v3", credentials=credentials)
-
-    return service
+    return build('drive', 'v3', credentials=credentials)
 
 
-def upload_file_to_drive(file_path, filename):
+def upload_bytes_to_drive(file_storage, filename, folder_id):
     service = get_drive_service()
+    if service is None:
+        raise RuntimeError('Google Drive não configurado.')
 
-    folder_id = os.environ.get("GOOGLE_DRIVE_FOLDER_ID")
+    suffix = ''
+    if '.' in filename:
+        suffix = '.' + filename.rsplit('.', 1)[1].lower()
 
-    file_metadata = {
-        "name": filename,
-        "parents": [folder_id]
-    }
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        file_storage.save(tmp.name)
+        temp_path = tmp.name
 
-    media = MediaFileUpload(file_path)
+    try:
+        metadata = {
+            'name': filename,
+            'parents': [folder_id]
+        }
 
-    file = service.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields="id"
-    ).execute()
+        media = MediaFileUpload(temp_path, resumable=True)
 
-    return file.get("id")
+        created = service.files().create(
+            body=metadata,
+            media_body=media,
+            fields='id, webViewLink, webContentLink'
+        ).execute()
+
+        service.permissions().create(
+            fileId=created['id'],
+            body={'type': 'anyone', 'role': 'reader'}
+        ).execute()
+
+        return {
+            'id': created['id'],
+            'webViewLink': created.get('webViewLink'),
+            'webContentLink': created.get('webContentLink'),
+        }
+    finally:
+        try:
+            os.remove(temp_path)
+        except OSError:
+            pass
