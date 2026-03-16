@@ -599,12 +599,15 @@ def save_upload(file_storage, subdir='misc'):
     unique_name = f'{uuid4().hex}.{extension}'
 
     if drive_enabled():
-        folder_id = os.getenv('GOOGLE_DRIVE_FOLDER_ID')
-        if not folder_id:
-            raise ValueError('GOOGLE_DRIVE_FOLDER_ID não configurado no ambiente.')
+    folder_id = os.getenv('GOOGLE_DRIVE_FOLDER_ID')
+    if not folder_id:
+        raise ValueError('GOOGLE_DRIVE_FOLDER_ID não configurado no ambiente.')
 
+    try:
         uploaded = upload_bytes_to_drive(file_storage, unique_name, folder_id)
         return f"https://drive.google.com/uc?id={uploaded['id']}"
+    except Exception as exc:
+        raise ValueError(f'Erro ao enviar imagem para o Google Drive: {exc}')
 
     target_dir = current_app.config['UPLOAD_FOLDER'] / subdir
     target_dir.mkdir(parents=True, exist_ok=True)
