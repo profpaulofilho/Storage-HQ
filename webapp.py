@@ -1,3 +1,4 @@
+from drive_service import drive_enabled, upload_bytes_to_drive
 import os
 import sqlite3
 from functools import wraps
@@ -65,7 +66,6 @@ def register_filters(app: Flask):
             return value
 
 
-
 def register_hooks(app: Flask):
     @app.before_request
     def load_logged_in_user():
@@ -87,7 +87,6 @@ def register_hooks(app: Flask):
             'current_user': g.get('user'),
             'stats': stats
         }
-
 
 
 def register_routes(app: Flask):
@@ -301,7 +300,6 @@ def register_routes(app: Flask):
         return {'status': 'ok'}
 
 
-
 def login_required(view):
     @wraps(view)
     def wrapped(*args, **kwargs):
@@ -311,7 +309,6 @@ def login_required(view):
         return view(*args, **kwargs)
 
     return wrapped
-
 
 
 def admin_required(view):
@@ -327,7 +324,6 @@ def admin_required(view):
     return wrapped
 
 
-
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(current_app.config['DATABASE'])
@@ -336,12 +332,10 @@ def get_db():
     return g.db
 
 
-
 def close_db(_exc=None):
     db = g.pop('db', None)
     if db is not None:
         db.close()
-
 
 
 def init_database():
@@ -395,7 +389,6 @@ def init_database():
         db.close()
 
 
-
 def ensure_default_admin(db):
     admin_username = os.getenv('DEFAULT_ADMIN_USERNAME', DEFAULT_ADMIN_USERNAME)
     admin_password = os.getenv('DEFAULT_ADMIN_PASSWORD', DEFAULT_ADMIN_PASSWORD)
@@ -407,17 +400,14 @@ def ensure_default_admin(db):
         )
 
 
-
 def fetch_one(query, params=()):
     row = get_db().execute(query, params).fetchone()
     return dict(row) if row else None
 
 
-
 def fetch_all(query, params=()):
     rows = get_db().execute(query, params).fetchall()
     return [dict(row) for row in rows]
-
 
 
 def authenticate_user(username: str, password: str):
@@ -442,18 +432,15 @@ def authenticate_user(username: str, password: str):
     return user
 
 
-
 def get_user_by_id(user_id: int | None):
     if not user_id:
         return None
     return fetch_one('SELECT * FROM users WHERE id = ?', (user_id,))
 
 
-
 def get_admin_count():
     row = fetch_one('SELECT COUNT(*) AS total FROM users WHERE is_admin = 1')
     return int(row['total']) if row else 0
-
 
 
 def add_admin_user(username: str, password: str):
@@ -474,7 +461,6 @@ def add_admin_user(username: str, password: str):
         return {'success': False, 'message': 'Nome de usuário já existe.'}
 
 
-
 def get_collections(with_counts=False):
     if with_counts:
         return fetch_all(
@@ -489,17 +475,14 @@ def get_collections(with_counts=False):
     return fetch_all('SELECT * FROM collections ORDER BY name')
 
 
-
 def get_collection(collection_id: int):
     return fetch_one('SELECT * FROM collections WHERE id = ?', (collection_id,))
-
 
 
 def add_collection(name: str, cover_image: str | None):
     cur = get_db().execute('INSERT INTO collections (name, cover_image) VALUES (?, ?)', (name, cover_image))
     get_db().commit()
     return cur.lastrowid
-
 
 
 def update_collection(collection_id: int, name: str, cover_image: str | None):
@@ -510,11 +493,9 @@ def update_collection(collection_id: int, name: str, cover_image: str | None):
     get_db().commit()
 
 
-
 def delete_collection(collection_id: int):
     get_db().execute('DELETE FROM collections WHERE id = ?', (collection_id,))
     get_db().commit()
-
 
 
 def get_comics_by_collection(collection_id: int):
@@ -528,10 +509,8 @@ def get_comics_by_collection(collection_id: int):
     )
 
 
-
 def get_comic(comic_id: int):
     return fetch_one('SELECT * FROM comics WHERE id = ?', (comic_id,))
-
 
 
 def add_comic(**kwargs):
@@ -553,7 +532,6 @@ def add_comic(**kwargs):
     return cur.lastrowid
 
 
-
 def update_comic(comic_id: int, **kwargs):
     get_db().execute(
         '''
@@ -573,11 +551,9 @@ def update_comic(comic_id: int, **kwargs):
     get_db().commit()
 
 
-
 def delete_comic(comic_id: int):
     get_db().execute('DELETE FROM comics WHERE id = ?', (comic_id,))
     get_db().commit()
-
 
 
 def get_recent_comics(limit=8):
@@ -591,7 +567,6 @@ def get_recent_comics(limit=8):
         ''',
         (limit,),
     )
-
 
 
 def get_stats():
@@ -608,20 +583,29 @@ def get_stats():
     }
 
 
-
 def allowed_file(filename: str):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 
 def save_upload(file_storage, subdir='misc'):
     if not file_storage or not getattr(file_storage, 'filename', ''):
         return None
+
     if not allowed_file(file_storage.filename):
         raise ValueError('Tipo de arquivo não suportado. Envie PNG, JPG, GIF, WEBP ou BMP.')
+
     filename = secure_filename(file_storage.filename)
     extension = filename.rsplit('.', 1)[1].lower()
     unique_name = f'{uuid4().hex}.{extension}'
+
+    if drive_enabled():
+        folder_id = os.getenv('GOOGLE_DRIVE_FOLDER_ID')
+        if not folder_id:
+            raise ValueError('GOOGLE_DRIVE_FOLDER_ID não configurado no ambiente.')
+
+        uploaded = upload_bytes_to_drive(file_storage, unique_name, folder_id)
+        return f"https://drive.google.com/uc?id={uploaded['id']}"
+
     target_dir = current_app.config['UPLOAD_FOLDER'] / subdir
     target_dir.mkdir(parents=True, exist_ok=True)
     absolute_path = target_dir / unique_name
@@ -629,14 +613,14 @@ def save_upload(file_storage, subdir='misc'):
     return f'uploads/{subdir}/{unique_name}'
 
 
-
 def delete_file(relative_path: str | None):
     if not relative_path:
+        return
+    if isinstance(relative_path, str) and relative_path.startswith('http'):
         return
     absolute = current_app.config['DATA_DIR'] / relative_path
     if absolute.exists() and absolute.is_file():
         absolute.unlink(missing_ok=True)
-
 
 
 def parse_comic_form(req):
