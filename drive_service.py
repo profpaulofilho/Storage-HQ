@@ -42,7 +42,7 @@ def upload_bytes_to_drive(file_storage, filename, folder_id):
     try:
         metadata = {
             'name': filename,
-            'parents': [folder_id]
+            'parents': [folder_id],
         }
 
         media = MediaFileUpload(temp_path, resumable=True)
@@ -50,12 +50,14 @@ def upload_bytes_to_drive(file_storage, filename, folder_id):
         created = service.files().create(
             body=metadata,
             media_body=media,
-            fields='id, webViewLink, webContentLink'
+            fields='id, webViewLink, webContentLink',
+            supportsAllDrives=True
         ).execute()
 
         service.permissions().create(
             fileId=created['id'],
-            body={'type': 'anyone', 'role': 'reader'}
+            body={'type': 'anyone', 'role': 'reader'},
+            supportsAllDrives=True
         ).execute()
 
         return {
