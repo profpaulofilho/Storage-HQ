@@ -1,10 +1,14 @@
 from drive_service import (
     drive_enabled,
     get_authorization_url,
-    load_credentials,
     save_credentials_from_response,
     upload_bytes_to_drive,
 )
+import os
+import sqlite3
+from functools import wraps
+from pathlib import Path
+from uuid import uuid4
 
 from flask import (
     Flask,
@@ -295,6 +299,7 @@ def register_routes(app: Flask):
     @app.get('/uploads/<path:filename>')
     def uploaded_file(filename):
         return send_from_directory(current_app.config['DATA_DIR'], filename)
+
     @app.get('/google-drive/connect')
     @admin_required
     def google_drive_connect():
@@ -317,6 +322,7 @@ def register_routes(app: Flask):
             flash(f'Erro ao conectar Google Drive: {exc}', 'danger')
 
         return redirect(url_for('dashboard'))
+
     @app.get('/healthz')
     def healthz():
         return {'status': 'ok'}
@@ -638,23 +644,6 @@ def save_upload(file_storage, subdir='misc'):
     file_storage.save(absolute_path)
     return f'uploads/{subdir}/{unique_name}'
 
-    if drive_enabled():
-        folder_id = os.getenv('GOOGLE_DRIVE_FOLDER_ID')
-
-        if not folder_id:
-            raise ValueError('GOOGLE_DRIVE_FOLDER_ID não configurado no ambiente.')
-
-        try:
-            uploaded = upload_bytes_to_drive(file_storage, unique_name, folder_id)
-            return f"https://drive.google.com/uc?id={uploaded['id']}"
-        except Exception as exc:
-            raise ValueError(f'Erro ao enviar imagem para o Google Drive: {exc}')
-
-    target_dir = current_app.config['UPLOAD_FOLDER'] / subdir
-    target_dir.mkdir(parents=True, exist_ok=True)
-    absolute_path = target_dir / unique_name
-    file_storage.save(absolute_path)
-    return f'uploads/{subdir}/{unique_name}'
 
 def delete_file(relative_path: str | None):
     if not relative_path:
