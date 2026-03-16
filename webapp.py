@@ -295,7 +295,28 @@ def register_routes(app: Flask):
     @app.get('/uploads/<path:filename>')
     def uploaded_file(filename):
         return send_from_directory(current_app.config['DATA_DIR'], filename)
+    @app.get('/google-drive/connect')
+    @admin_required
+    def google_drive_connect():
+        auth_url, state = get_authorization_url()
+        session['google_oauth_state'] = state
+        return redirect(auth_url)
 
+    @app.get('/oauth2callback')
+    @admin_required
+    def oauth2callback():
+        state = session.get('google_oauth_state')
+        if not state:
+            flash('Estado OAuth não encontrado. Tente conectar novamente.', 'danger')
+            return redirect(url_for('dashboard'))
+
+        try:
+            save_credentials_from_response(state, request.url)
+            flash('Google Drive conectado com sucesso.', 'success')
+        except Exception as exc:
+            flash(f'Erro ao conectar Google Drive: {exc}', 'danger')
+
+        return redirect(url_for('dashboard'))
     @app.get('/healthz')
     def healthz():
         return {'status': 'ok'}
