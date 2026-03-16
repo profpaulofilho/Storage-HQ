@@ -1,32 +1,55 @@
-# STORAGE HQs Web
+# Storage HQs - Biblioteca de Attilan
 
-Conversão da aplicação desktop em PyQt5 para uma aplicação web em Flask, pronta para publicação no **GitHub** e deploy no **Render**.
+Aplicação web em Flask para curadoria de HQs, com biblioteca pública, painel administrativo, coleções, HQs e upload de capas.
 
-## O que a versão web entrega
+## O que foi ajustado nesta versão
 
-- login com autenticação por sessão
-- compatibilidade com o usuário legado `STAN_ADM`
-- migração automática de hash SHA-256 legado para hash seguro do Werkzeug no primeiro login
-- criação de até 2 administradores
-- CRUD completo de coleções
-- CRUD completo de HQs
-- upload de capas para coleções e HQs
-- biblioteca pública para visualização sem login
-- persistência de banco SQLite e uploads em disco montado no Render
+- identidade visual renovada da página principal
+- título atualizado para **Storage HQs - Biblioteca de Attilan**
+- home simplificada com foco em **Coleções** e **HQs**
+- rodapé personalizado com seus créditos
+- interface com visual mais moderno e mais geek
+- suporte a persistência via `DATA_DIR` para SQLite e uploads
 
-## Estrutura do projeto
+## Como a persistência funciona hoje
 
-- `webapp.py`: aplicação Flask
-- `templates/`: páginas HTML
-- `static/`: CSS e imagens base
-- `render.yaml`: blueprint para deploy no Render
-- `requirements.txt`: dependências Python
+A aplicação salva dados em:
 
-## Rodando localmente
+- banco SQLite: `DATA_DIR/storage_hqs.db`
+- imagens: `DATA_DIR/uploads/...`
+
+Em ambiente local, basta definir `DATA_DIR=./data`.
+
+No Render, a aplicação **precisa** gravar em um local persistente. O filesystem padrão do serviço é efêmero, então dados locais desaparecem após restart ou novo deploy. Para produção, o ideal é uma destas opções:
+
+1. **Persistent Disk do Render** montado em `/var/data`.
+2. **Postgres** para os dados + armazenamento externo para imagens.
+3. **Google Drive** apenas como integração planejada de backup/arquivos, não como banco principal.
+
+## Google Drive: dá para usar?
+
+Sim, **é possível integrar** a aplicação com Google Drive pela API do Google para:
+
+- enviar capas para uma pasta no Drive
+- baixar capas quando necessário
+- manter backup do banco SQLite
+
+Mas, para este projeto, **não é a melhor base de persistência principal**. O mais robusto é:
+
+- usar **Persistent Disk** no Render para continuar com SQLite, ou
+- migrar para **Postgres**.
+
+O Google Drive faz mais sentido como:
+
+- backup automático
+- repositório de imagens
+- exportação de acervo
+
+## Execução local
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # Linux/macOS
+source .venv/bin/activate
 pip install -r requirements.txt
 export SECRET_KEY='troque-isto'
 export DATA_DIR='./data'
@@ -44,31 +67,24 @@ $env:DATA_DIR='./data'
 python webapp.py
 ```
 
-Acesse em `http://127.0.0.1:5000`.
-
 ## Credenciais iniciais
 
-Por padrão, a app cria o usuário admin abaixo na primeira execução:
-
 - usuário: `STAN_ADM`
-- senha: valor de `DEFAULT_ADMIN_PASSWORD`
-
-No Render, configure essa variável no painel antes do primeiro deploy.
+- senha: valor configurado em `DEFAULT_ADMIN_PASSWORD`
 
 ## Deploy no Render
 
-1. Publique este projeto em um repositório GitHub.
-2. No Render, escolha **Blueprint** ou **New Web Service** a partir do repositório.
-3. Confirme o arquivo `render.yaml`.
-4. Defina `DEFAULT_ADMIN_PASSWORD` com uma senha forte.
-5. Faça o deploy.
+1. Publique no GitHub.
+2. Crie o serviço web no Render.
+3. Defina `SECRET_KEY`.
+4. Defina `DEFAULT_ADMIN_PASSWORD`.
+5. Garanta que `DATA_DIR` aponte para `/var/data`.
+6. No plano pago, anexe um **Persistent Disk** em `/var/data`.
 
-## Observações importantes
+## Estrutura principal
 
-- o Render precisa do disco montado em `/var/data` para preservar **SQLite** e **uploads** entre deploys;
-- se você quiser migrar um banco antigo `storage_hqs.db`, copie esse arquivo para o diretório montado (`/var/data`) antes de iniciar a aplicação;
-- como a estrutura do banco foi mantida compatível, dados antigos podem ser reaproveitados.
-
-## Segurança
-
-A senha padrão original do desktop era apenas para seed inicial. Troque imediatamente em produção criando novo admin e removendo o uso da senha padrão.
+- `webapp.py`: aplicação Flask
+- `templates/`: páginas HTML
+- `static/css/app.css`: tema visual
+- `static/images/hero-pattern.svg`: fundo decorativo da home
+- `render.yaml`: blueprint do serviço

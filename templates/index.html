@@ -1,38 +1,74 @@
 {% extends 'base.html' %}
 {% block title %}Biblioteca | {{ app_title }}{% endblock %}
 {% block content %}
-<div class="row g-3 mb-4">
-  <div class="col-md-3"><div class="stat-card"><span>Coleções</span><strong>{{ stats.collections }}</strong></div></div>
-  <div class="col-md-3"><div class="stat-card"><span>HQs</span><strong>{{ stats.comics }}</strong></div></div>
-  <div class="col-md-3"><div class="stat-card"><span>Admins</span><strong>{{ stats.admins }}</strong></div></div>
-  <div class="col-md-3"><div class="stat-card"><span>Valor estimado</span><strong>{{ stats.total_value|currency('R$') }}</strong></div></div>
-</div>
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2 class="h4 m-0">Coleções</h2>
-  {% if current_user and current_user.is_admin %}
-    <a class="btn btn-danger" href="{{ url_for('collection_new') }}">Nova coleção</a>
-  {% endif %}
-</div>
-
-<div class="row g-4">
-  {% for collection in collections %}
-    <div class="col-sm-6 col-lg-4 col-xl-3">
-      <div class="card h-100 shadow-sm comic-card">
-        {% if collection.cover_image %}
-          <img class="card-img-top cover-img" src="{{ url_for('uploaded_file', filename=collection.cover_image) }}" alt="{{ collection.name }}">
-        {% else %}
-          <img class="card-img-top cover-img" src="{{ url_for('static', filename='images/comic_collage.jpg') }}" alt="capa padrão">
-        {% endif %}
-        <div class="card-body d-flex flex-column">
-          <h3 class="h5 card-title">{{ collection.name }}</h3>
-          <p class="text-secondary small">Criada em {{ collection.created_at }}</p>
-          <a class="btn btn-outline-danger mt-auto" href="{{ url_for('collection_detail', collection_id=collection.id) }}">Abrir coleção</a>
-        </div>
+<section class="row g-3 mb-4">
+  <div class="col-md-6 col-xl-4">
+    <div class="stat-card glow-card h-100">
+      <span><i class="bi bi-layers"></i> Coleções</span>
+      <strong>{{ stats.collections }}</strong>
+      <small>Universos organizados na sua biblioteca.</small>
+    </div>
+  </div>
+  <div class="col-md-6 col-xl-4">
+    <div class="stat-card glow-card h-100">
+      <span><i class="bi bi-journal-richtext"></i> HQs</span>
+      <strong>{{ stats.comics }}</strong>
+      <small>Edições cadastradas no acervo.</small>
+    </div>
+  </div>
+  <div class="col-xl-4">
+    <div class="feature-card h-100">
+      <div>
+        <span class="section-chip">Arquivo nerd</span>
+        <h2 class="h5 mt-3 mb-2">Biblioteca de Attilan</h2>
+        <p class="text-secondary mb-0">Uma área inicial mais visual, com atmosfera sci-fi e destaque total para sua coleção.</p>
       </div>
     </div>
-  {% else %}
-    <div class="col-12"><div class="empty-state">Nenhuma coleção cadastrada ainda.</div></div>
-  {% endfor %}
-</div>
+  </div>
+</section>
+
+<section class="panel-shell mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3" id="colecoes">
+    <div>
+      <span class="section-chip">Acervo principal</span>
+      <h2 class="h3 mt-2 mb-0">Coleção de HQs</h2>
+    </div>
+    {% if current_user and current_user.is_admin %}
+      <a class="btn btn-danger" href="{{ url_for('collection_new') }}"><i class="bi bi-plus-circle"></i> Nova coleção</a>
+    {% endif %}
+  </div>
+
+  <div class="row g-4">
+    {% for collection in collections %}
+      <div class="col-sm-6 col-lg-4 col-xl-3">
+        <article class="card h-100 comic-card shadow-sm">
+          <div class="card-cover-wrap">
+            {% if collection.cover_image %}
+              <img class="card-img-top cover-img" src="{{ url_for('uploaded_file', filename=collection.cover_image) }}" alt="{{ collection.name }}">
+            {% else %}
+              <div class="default-cover">
+                <i class="bi bi-book"></i>
+                <span>Sem capa</span>
+              </div>
+            {% endif %}
+          </div>
+          <div class="card-body d-flex flex-column">
+            <div class="card-meta mb-2"><i class="bi bi-calendar3"></i> {{ collection.created_at }}</div>
+            <h3 class="h5 card-title">{{ collection.name }}</h3>
+            <p class="text-secondary small mb-4">Entre nesta coleção para visualizar as HQs, capas e detalhes do acervo.</p>
+            <a class="btn btn-outline-danger mt-auto" href="{{ url_for('collection_detail', collection_id=collection.id) }}">Abrir coleção</a>
+          </div>
+        </article>
+      </div>
+    {% else %}
+      <div class="col-12">
+        <div class="empty-state glow-card">
+          <div class="empty-icon"><i class="bi bi-collection"></i></div>
+          <h3 class="h4">Nenhuma coleção cadastrada ainda</h3>
+          <p class="mb-0 text-secondary">Comece criando sua primeira coleção para montar a Biblioteca de Attilan.</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
 {% endblock %}

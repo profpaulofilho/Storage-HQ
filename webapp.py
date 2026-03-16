@@ -20,7 +20,7 @@ from flask import (
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
-APP_TITLE = 'STORAGE HQs'
+APP_TITLE = 'Storage HQs - Biblioteca de Attilan'
 DEFAULT_ADMIN_USERNAME = 'STAN_ADM'
 DEFAULT_ADMIN_PASSWORD = 'Excelsior'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'}

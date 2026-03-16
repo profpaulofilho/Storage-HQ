@@ -3,27 +3,28 @@
 {% block content %}
 <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-4">
   <div>
-    <h2 class="h4 mb-1">Painel administrativo</h2>
-    <p class="text-secondary mb-0">Gerencie coleções, HQs e usuários administradores.</p>
+    <span class="section-chip">Modo administrador</span>
+    <h2 class="h3 mb-1 mt-2">Painel de gerenciamento</h2>
+    <p class="text-secondary mb-0">Gerencie coleções, HQs e usuários com uma visão central do acervo.</p>
   </div>
-  <div class="d-flex gap-2">
-    <a class="btn btn-danger" href="{{ url_for('collection_new') }}">Nova coleção</a>
+  <div class="d-flex gap-2 flex-wrap">
+    <a class="btn btn-danger" href="{{ url_for('collection_new') }}"><i class="bi bi-plus-circle"></i> Nova coleção</a>
     {% if current_user.is_admin %}
-      <a class="btn btn-outline-warning" href="{{ url_for('admin_user_new') }}">Novo admin</a>
+      <a class="btn btn-outline-warning" href="{{ url_for('admin_user_new') }}"><i class="bi bi-person-plus"></i> Novo admin</a>
     {% endif %}
   </div>
 </div>
 
 <div class="row g-3 mb-4">
-  <div class="col-md-3"><div class="stat-card"><span>Coleções</span><strong>{{ stats.collections }}</strong></div></div>
-  <div class="col-md-3"><div class="stat-card"><span>HQs</span><strong>{{ stats.comics }}</strong></div></div>
-  <div class="col-md-3"><div class="stat-card"><span>Admins</span><strong>{{ stats.admins }}</strong></div></div>
-  <div class="col-md-3"><div class="stat-card"><span>Valor total</span><strong>{{ stats.total_value|currency('R$') }}</strong></div></div>
+  <div class="col-md-6 col-xl-3"><div class="stat-card glow-card h-100"><span><i class="bi bi-layers"></i> Coleções</span><strong>{{ stats.collections }}</strong><small>Total de coleções ativas.</small></div></div>
+  <div class="col-md-6 col-xl-3"><div class="stat-card glow-card h-100"><span><i class="bi bi-journal-richtext"></i> HQs</span><strong>{{ stats.comics }}</strong><small>Total de HQs cadastradas.</small></div></div>
+  <div class="col-md-6 col-xl-3"><div class="stat-card glow-card h-100"><span><i class="bi bi-shield-lock"></i> Admins</span><strong>{{ stats.admins }}</strong><small>Usuários com acesso total.</small></div></div>
+  <div class="col-md-6 col-xl-3"><div class="stat-card glow-card h-100"><span><i class="bi bi-cash-coin"></i> Valor total</span><strong>{{ stats.total_value|currency('R$') }}</strong><small>Baseado no valor atual informado.</small></div></div>
 </div>
 
 <div class="row g-4">
   <div class="col-lg-7">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm panel-table h-100">
       <div class="card-body">
         <h3 class="h5 mb-3">Coleções</h3>
         <div class="table-responsive">
@@ -46,7 +47,7 @@
     </div>
   </div>
   <div class="col-lg-5">
-    <div class="card shadow-sm h-100">
+    <div class="card shadow-sm h-100 panel-table">
       <div class="card-body">
         <h3 class="h5 mb-3">HQs recentes</h3>
         <div class="vstack gap-3">
