@@ -57,11 +57,11 @@
       <div class="hero-panel-card glow-card">
         <div class="mini-stat">
           <span><i class="bi bi-layers"></i> Coleções</span>
-          <strong>{{ stats.collections }}</strong>
+         <strong>{{ stats.collections if stats else 0 }}</strong>
         </div>
         <div class="mini-stat">
           <span><i class="bi bi-journal-richtext"></i> HQs</span>
-          <strong>{{ stats.comics }}</strong>
+          <strong>{{ stats.collections if stats else 0 }}</strong>
         </div>
         <div class="hero-note">
           <i class="bi bi-lightning-charge-fill"></i>
