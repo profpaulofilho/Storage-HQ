@@ -303,20 +303,25 @@ def register_routes(app: Flask):
     @app.get('/google-drive/connect')
     @admin_required
     def google_drive_connect():
-        auth_url, state = get_authorization_url()
+        auth_url, state, code_verifier = get_authorization_url()
         session['google_oauth_state'] = state
+        session['google_oauth_code_verifier'] = code_verifier
         return redirect(auth_url)
 
     @app.get('/oauth2callback')
     @admin_required
     def oauth2callback():
         state = session.get('google_oauth_state')
-        if not state:
+        code_verifier = session.get('google_oauth_code_verifier')
+
+        if not state or not code_verifier:
             flash('Estado OAuth não encontrado. Tente conectar novamente.', 'danger')
             return redirect(url_for('dashboard'))
 
         try:
-            save_credentials_from_response(state, request.url)
+            save_credentials_from_response(state, code_verifier, request.url)
+            session.pop('google_oauth_state', None)
+            session.pop('google_oauth_code_verifier', None)
             flash('Google Drive conectado com sucesso.', 'success')
         except Exception as exc:
             flash(f'Erro ao conectar Google Drive: {exc}', 'danger')
