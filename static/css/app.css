@@ -361,3 +361,14 @@ textarea:focus {
     padding-top: 2.75rem;
   }
 }
+input,
+textarea,
+select {
+    color: #111 !important;
+    background-color: #ffffff !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #666;
+}
