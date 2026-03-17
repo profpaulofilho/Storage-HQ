@@ -449,3 +449,19 @@ textarea:focus {
 .login-card {
   background: rgba(9, 14, 25, 0.96);
 }
+/* 🎬 Background principal */
+body {
+  background:
+    linear-gradient(rgba(5,7,13,0.9), rgba(5,7,13,0.95)),
+    url("../images/tela-inicial-1.jpg") center/cover no-repeat fixed;
+}
+
+/* 🎥 GIF na hero */
+.hero-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("../images/tela-inicial-hqs.gif") center/contain no-repeat;
+  opacity: 0.08;
+  pointer-events: none;
+}
