@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff4d5a"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="900" fill="#0b1020"/>
+  <rect x="30" y="30" width="540" height="840" rx="28" fill="url(#g)" opacity="0.14" stroke="rgba(255,255,255,0.20)"/>
+  <g fill="#e9efff" opacity="0.95">
+    <path d="M216 300h168c22 0 40 18 40 40v180c0 22-18 40-40 40H216c-22 0-40-18-40-40V340c0-22 18-40 40-40Zm0 28c-7 0-12 5-12 12v180c0 7 5 12 12 12h168c7 0 12-5 12-12V340c0-7-5-12-12-12H216Z"/>
+    <circle cx="245" cy="380" r="28"/>
+    <path d="M220 490l65-70 50 52 38-36 43 54v30H220v-30Z"/>
+  </g>
+  <text x="300" y="650" text-anchor="middle" fill="#e9efff" font-size="42" font-family="Arial, Helvetica, sans-serif">SEM CAPA</text>
+  <text x="300" y="700" text-anchor="middle" fill="#bfc9e8" font-size="24" font-family="Arial, Helvetica, sans-serif">Storage HQs</text>
+</svg>

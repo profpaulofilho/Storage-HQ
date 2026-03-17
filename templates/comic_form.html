@@ -3,7 +3,7 @@
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-xl-9">
-    <div class="card shadow-sm panel-table"><div class="card-body p-4">
+    <div class="card shadow-sm panel-shell"><div class="card-body p-4">
       <h2 class="h4 mb-4">{{ 'Editar HQ' if comic else 'Nova HQ' }} — {{ collection.name }}</h2>
       <form method="post" enctype="multipart/form-data" class="row g-3">
         <div class="col-md-6"><label class="form-label">Nome</label><input class="form-control" name="name" value="{{ comic.name if comic else '' }}" required></div>
@@ -13,14 +13,14 @@
         <div class="col-md-4"><label class="form-label">Valor de lançamento</label><input class="form-control" name="launch_value" value="{{ comic.launch_value if comic and comic.launch_value is not none else '' }}"></div>
         <div class="col-md-4"><label class="form-label">Moeda</label><input class="form-control" name="currency_type" value="{{ comic.currency_type if comic else 'R$' }}"></div>
         <div class="col-md-4"><label class="form-label">Valor atual</label><input class="form-control" name="current_value" value="{{ comic.current_value if comic and comic.current_value is not none else '' }}"></div>
-        <div class="col-md-4"><label class="form-label">Upload da capa</label><input class="form-control" type="file" name="cover_image" accept="image/*"></div>
-        <div class="col-md-4"><label class="form-label">URL da capa</label><input class="form-control" name="cover_image_url" placeholder="https://..." value="{{ comic.cover_image if comic and comic.cover_image and comic.cover_image.startswith('http') else '' }}"></div>
+        <div class="col-md-8"><label class="form-label">URL da capa</label><input class="form-control" name="cover_image_url" placeholder="https://drive.google.com/uc?id=... ou outra URL pública" value="{{ comic.cover_image if comic and comic.cover_image and (comic.cover_image.startswith('http://') or comic.cover_image.startswith('https://')) else '' }}"></div>
+        <div class="col-md-8"><label class="form-label">Ou envie um arquivo</label><input class="form-control" type="file" name="cover_image" accept="image/*"></div>
         <div class="col-12 form-check ms-2"><input class="form-check-input" type="checkbox" name="is_special_edition" {% if comic and comic.is_special_edition %}checked{% endif %}><label class="form-check-label">Edição especial</label></div>
         <div class="col-12"><label class="form-label">Sinopse</label><textarea class="form-control" rows="4" name="synopsis">{{ comic.synopsis if comic else '' }}</textarea></div>
         <div class="col-12"><label class="form-label">Comentários do colecionador</label><textarea class="form-control" rows="3" name="collector_comments">{{ comic.collector_comments if comic else '' }}</textarea></div>
         <div class="col-12"><label class="form-label">Curiosidades</label><textarea class="form-control" rows="3" name="trivia">{{ comic.trivia if comic else '' }}</textarea></div>
         {% if comic and comic.cover_image %}
-          <div class="col-12"><img class="form-preview" src="{{ media_src(comic.cover_image) }}" alt="capa atual" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/imagem1.jpg') }}';"></div>
+          <div class="col-12"><img class="form-preview" src="{{ media_src(comic.cover_image) }}" alt="capa atual"></div>
         {% endif %}
         <div class="col-12 d-flex gap-2">
           <button class="btn btn-danger">Salvar</button>

@@ -2,28 +2,27 @@
 {% block title %}Biblioteca | {{ app_title }}{% endblock %}
 {% block content %}
 <section class="row g-3 mb-4">
-  <div class="col-md-6 col-xl-3">
+  <div class="col-md-6 col-xl-4">
     <div class="stat-card glow-card h-100">
       <span><i class="bi bi-layers"></i> Coleções</span>
       <strong>{{ stats.collections }}</strong>
       <small>Universos organizados na sua biblioteca.</small>
     </div>
   </div>
-  <div class="col-md-6 col-xl-3">
+  <div class="col-md-6 col-xl-4">
     <div class="stat-card glow-card h-100">
       <span><i class="bi bi-journal-richtext"></i> HQs</span>
       <strong>{{ stats.comics }}</strong>
       <small>Edições cadastradas no acervo.</small>
     </div>
   </div>
-  <div class="col-md-6 col-xl-3">
-    <div class="feature-card h-100 art-card">
-      <img src="{{ url_for('static', filename='images/tela-inicial-1.jpg') }}" alt="Arte de interface com HQs" class="feature-art">
-    </div>
-  </div>
-  <div class="col-md-6 col-xl-3">
-    <div class="feature-card h-100 art-card">
-      <img src="{{ url_for('static', filename='images/tela-inicial-hqs.gif') }}" alt="Animação geek da biblioteca" class="feature-art">
+  <div class="col-xl-4">
+    <div class="feature-card h-100">
+      <div>
+        <span class="section-chip">Arquivo nerd</span>
+        <h2 class="h5 mt-3 mb-2">Biblioteca de Attilan</h2>
+        <p class="text-secondary mb-0">Uma área inicial mais visual, com atmosfera sci-fi e destaque total para sua coleção.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -45,7 +44,7 @@
         <article class="card h-100 comic-card shadow-sm">
           <div class="card-cover-wrap">
             {% if collection.cover_image %}
-              <img class="card-img-top cover-img" src="{{ media_src(collection.cover_image) }}" alt="{{ collection.name }}" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/comic_collage.jpg') }}';">
+              <img class="card-img-top cover-img" src="{{ media_src(collection.cover_image) }}" alt="{{ collection.name }}">
             {% else %}
               <div class="default-cover">
                 <i class="bi bi-book"></i>

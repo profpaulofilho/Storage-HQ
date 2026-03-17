@@ -2,28 +2,25 @@
 {% block title %}{{ 'Editar' if collection else 'Nova' }} coleção | {{ app_title }}{% endblock %}
 {% block content %}
 <div class="row justify-content-center">
-  <div class="col-lg-8">
-    <div class="card shadow-sm panel-table"><div class="card-body p-4">
+  <div class="col-lg-7">
+    <div class="card shadow-sm panel-shell"><div class="card-body p-4">
       <h2 class="h4 mb-4">{{ 'Editar coleção' if collection else 'Nova coleção' }}</h2>
       <form method="post" enctype="multipart/form-data" class="vstack gap-3">
         <div>
           <label class="form-label">Nome da coleção</label>
           <input class="form-control" name="name" value="{{ collection.name if collection else '' }}" required>
         </div>
-        <div class="row g-3 align-items-start">
-          <div class="col-md-6">
-            <label class="form-label">Upload de capa</label>
-            <input class="form-control" type="file" name="cover_image" accept="image/*">
-            <div class="form-help">Envie um arquivo local se quiser armazenar a capa no sistema ou no Google Drive.</div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">URL da capa</label>
-            <input class="form-control" name="cover_image_url" placeholder="https://..." value="{{ collection.cover_image if collection and collection.cover_image and collection.cover_image.startswith('http') else '' }}">
-            <div class="form-help">Aceita URL externa e links do Google Drive.</div>
-          </div>
+        <div>
+          <label class="form-label">URL da capa</label>
+          <input class="form-control" name="cover_image_url" placeholder="https://drive.google.com/uc?id=... ou outra URL pública" value="{{ collection.cover_image if collection and collection.cover_image and (collection.cover_image.startswith('http://') or collection.cover_image.startswith('https://')) else '' }}">
+          <div class="form-text text-light-emphasis">Use URL pública para maior estabilidade no Render free.</div>
+        </div>
+        <div>
+          <label class="form-label">Ou envie um arquivo</label>
+          <input class="form-control" type="file" name="cover_image" accept="image/*">
         </div>
         {% if collection and collection.cover_image %}
-          <img class="form-preview" src="{{ media_src(collection.cover_image) }}" alt="capa atual" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/comic_collage.jpg') }}';">
+          <img class="form-preview" src="{{ media_src(collection.cover_image) }}" alt="capa atual">
         {% endif %}
         <div class="d-flex gap-2">
           <button class="btn btn-danger">Salvar</button>
