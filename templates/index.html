@@ -45,7 +45,7 @@
         <article class="card h-100 comic-card shadow-sm">
           <div class="card-cover-wrap">
             {% if collection.cover_image %}
-              <img class="card-img-top cover-img" src="{{ media_src(collection.cover_image) }}" alt="{{ collection.name }}">
+              <img class="card-img-top cover-img" src="{{ media_src(collection.cover_image) }}" alt="{{ collection.name }}" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/comic_collage.jpg') }}';">
             {% else %}
               <div class="default-cover">
                 <i class="bi bi-book"></i>

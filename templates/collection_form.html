@@ -23,7 +23,7 @@
           </div>
         </div>
         {% if collection and collection.cover_image %}
-          <img class="form-preview" src="{{ media_src(collection.cover_image) }}" alt="capa atual">
+          <img class="form-preview" src="{{ media_src(collection.cover_image) }}" alt="capa atual" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/comic_collage.jpg') }}';">
         {% endif %}
         <div class="d-flex gap-2">
           <button class="btn btn-danger">Salvar</button>

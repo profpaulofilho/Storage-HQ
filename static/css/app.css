@@ -361,19 +361,6 @@ textarea:focus {
     padding-top: 2.75rem;
   }
 }
-input,
-textarea,
-select {
-    color: #111 !important;
-    background-color: #ffffff !important;
-}
-
-input::placeholder,
-textarea::placeholder {
-    color: #666;
-}
-
-
 .hero-banner::after {
   content: "";
   position: absolute;
@@ -448,4 +435,52 @@ textarea::placeholder {
   .hero-grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+label.form-label,
+.form-check-label,
+.panel-table strong,
+.panel-table h3,
+.panel-table h2,
+.panel-table p,
+.panel-table td,
+.panel-table td a,
+.panel-table .table,
+.recent-item strong {
+  color: var(--text) !important;
+}
+
+.recent-item span,
+.panel-table .text-secondary,
+.panel-table small {
+  color: var(--muted) !important;
+}
+
+.panel-table .table tbody td {
+  color: var(--text) !important;
+}
+
+.btn-outline-secondary {
+  color: #d9e1f6;
+  border-color: rgba(255,255,255,.18);
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+  color: #fff;
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.28);
+}
+
+.login-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 50px rgba(0,0,0,.32), 0 0 40px var(--glow);
+}
+
+.login-card .form-label,
+.login-card .h4,
+.login-card .text-secondary {
+  color: var(--text) !important;
 }

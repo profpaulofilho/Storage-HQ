@@ -652,11 +652,18 @@ def resolve_image_input(req, subdir='misc'):
 
 
 def media_src(path: str | None):
+    placeholder = url_for('static', filename='images/comic_collage.jpg')
     if not path:
-        return url_for('static', filename='images/comic_collage.jpg')
-    if isinstance(path, str) and path.startswith(('http://', 'https://')):
-        return path
-    cleaned = path.lstrip('/')
+        return placeholder
+
+    if isinstance(path, str):
+        normalized = normalize_external_image_url(path) or path
+        if normalized.startswith(('http://', 'https://')):
+            return normalized
+        cleaned = normalized.lstrip('/')
+    else:
+        return placeholder
+
     if cleaned.startswith('uploads/'):
         return url_for('uploaded_file', filename=cleaned)
     return url_for('static', filename=cleaned)

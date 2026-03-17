@@ -18,7 +18,7 @@
 </div>
 <div class="row g-4">
   <div class="col-lg-4">
-    <img class="img-fluid rounded shadow-sm detail-cover" src="{{ media_src(comic.cover_image or 'images/imagem1.jpg') }}" alt="{{ comic.name }}">
+    <img class="img-fluid rounded shadow-sm detail-cover" src="{{ media_src(comic.cover_image or 'images/imagem1.jpg') }}" alt="{{ comic.name }}" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/imagem1.jpg') }}';">
   </div>
   <div class="col-lg-8">
     <div class="card shadow-sm mb-4 panel-table">
