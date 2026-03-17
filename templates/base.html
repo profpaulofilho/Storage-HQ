@@ -94,5 +94,57 @@
   </div>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- 🎵 Áudio -->
+<audio id="bg-audio" loop>
+  <source src="{{ url_for('static', filename='audio/storagehqs-song.mp3') }}" type="audio/mpeg">
+</audio>
+
+<!-- 🔊 Botão de som -->
+<button id="audio-toggle" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  border: none;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+">
+  <img id="audio-icon" src="{{ url_for('static', filename='images/sem-som.ico') }}" width="28">
+</button>
+
+<script>
+const audio = document.getElementById("bg-audio");
+const btn = document.getElementById("audio-toggle");
+const icon = document.getElementById("audio-icon");
+
+let isPlaying = false;
+
+// tentativa automática (pode ser bloqueada)
+window.addEventListener("load", () => {
+  audio.volume = 0.4;
+  audio.play().then(() => {
+    isPlaying = true;
+    icon.src = "{{ url_for('static', filename='images/com-som.ico') }}";
+  }).catch(() => {
+    isPlaying = false;
+  });
+});
+
+// clique manual
+btn.addEventListener("click", () => {
+  if (isPlaying) {
+    audio.pause();
+    icon.src = "{{ url_for('static', filename='images/sem-som.ico') }}";
+  } else {
+    audio.play();
+    icon.src = "{{ url_for('static', filename='images/com-som.ico') }}";
+  }
+  isPlaying = !isPlaying;
+});
+</script>
 </body>
 </html>
