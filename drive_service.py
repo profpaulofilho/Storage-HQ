@@ -1,4 +1,5 @@
 import os
+import secrets
 import tempfile
 from pathlib import Path
 
@@ -42,25 +43,32 @@ def get_oauth_client_config():
     }
 
 
-def build_auth_flow(state=None):
+def build_auth_flow(state=None, code_verifier=None):
     config = get_oauth_client_config()
-    flow = Flow.from_client_config(config, scopes=SCOPES, state=state)
+    flow = Flow.from_client_config(
+        config,
+        scopes=SCOPES,
+        state=state,
+        code_verifier=code_verifier,
+    )
     flow.redirect_uri = os.getenv('GOOGLE_OAUTH_REDIRECT_URI')
     return flow
 
 
 def get_authorization_url():
-    flow = build_auth_flow()
+    code_verifier = secrets.token_urlsafe(64)
+    flow = build_auth_flow(code_verifier=code_verifier)
+
     auth_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true',
         prompt='consent',
     )
-    return auth_url, state
+    return auth_url, state, code_verifier
 
 
-def save_credentials_from_response(state, authorization_response):
-    flow = build_auth_flow(state=state)
+def save_credentials_from_response(state, code_verifier, authorization_response):
+    flow = build_auth_flow(state=state, code_verifier=code_verifier)
     flow.fetch_token(authorization_response=authorization_response)
     creds = flow.credentials
     _token_path().write_text(creds.to_json(), encoding='utf-8')
