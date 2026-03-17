@@ -18,14 +18,10 @@
 </div>
 <div class="row g-4">
   <div class="col-lg-4">
-    {% if comic.cover_image %}
-      <img class="img-fluid rounded shadow-sm" src="{{ url_for('uploaded_file', filename=comic.cover_image) }}" alt="{{ comic.name }}">
-    {% else %}
-      <img class="img-fluid rounded shadow-sm" src="{{ url_for('static', filename='images/imagem1.jpg') }}" alt="sem capa">
-    {% endif %}
+    <img class="img-fluid rounded shadow-sm detail-cover" src="{{ media_src(comic.cover_image or 'images/imagem1.jpg') }}" alt="{{ comic.name }}">
   </div>
   <div class="col-lg-8">
-    <div class="card shadow-sm mb-4">
+    <div class="card shadow-sm mb-4 panel-table">
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-6"><strong>Edição especial:</strong> {{ 'Sim' if comic.is_special_edition else 'Não' }}</div>
@@ -35,9 +31,9 @@
         </div>
       </div>
     </div>
-    <div class="card shadow-sm mb-3"><div class="card-body"><h3 class="h5">Sinopse</h3><p class="mb-0">{{ comic.synopsis or 'Sem sinopse cadastrada.' }}</p></div></div>
-    <div class="card shadow-sm mb-3"><div class="card-body"><h3 class="h5">Comentários do colecionador</h3><p class="mb-0">{{ comic.collector_comments or 'Sem comentários cadastrados.' }}</p></div></div>
-    <div class="card shadow-sm"><div class="card-body"><h3 class="h5">Curiosidades</h3><p class="mb-0">{{ comic.trivia or 'Sem curiosidades cadastradas.' }}</p></div></div>
+    <div class="card shadow-sm mb-3 panel-table"><div class="card-body"><h3 class="h5">Sinopse</h3><p class="mb-0">{{ comic.synopsis or 'Sem sinopse cadastrada.' }}</p></div></div>
+    <div class="card shadow-sm mb-3 panel-table"><div class="card-body"><h3 class="h5">Comentários do colecionador</h3><p class="mb-0">{{ comic.collector_comments or 'Sem comentários cadastrados.' }}</p></div></div>
+    <div class="card shadow-sm panel-table"><div class="card-body"><h3 class="h5">Curiosidades</h3><p class="mb-0">{{ comic.trivia or 'Sem curiosidades cadastradas.' }}</p></div></div>
   </div>
 </div>
 {% endblock %}

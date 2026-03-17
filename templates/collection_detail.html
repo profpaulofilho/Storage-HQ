@@ -19,22 +19,14 @@
 
 <div class="row g-4 mb-4 align-items-start">
   <div class="col-md-4">
-    {% if collection.cover_image %}
-      <img class="img-fluid rounded shadow-sm" src="{{ url_for('uploaded_file', filename=collection.cover_image) }}" alt="{{ collection.name }}">
-    {% else %}
-      <img class="img-fluid rounded shadow-sm" src="{{ url_for('static', filename='images/comic_collage.jpg') }}" alt="imagem padrão">
-    {% endif %}
+    <img class="img-fluid rounded shadow-sm detail-cover" src="{{ media_src(collection.cover_image) }}" alt="{{ collection.name }}">
   </div>
   <div class="col-md-8">
     <div class="row g-4">
       {% for comic in comics %}
       <div class="col-sm-6 col-xl-4">
         <div class="card h-100 shadow-sm comic-card">
-          {% if comic.cover_image %}
-            <img class="card-img-top cover-img" src="{{ url_for('uploaded_file', filename=comic.cover_image) }}" alt="{{ comic.name }}">
-          {% else %}
-            <img class="card-img-top cover-img" src="{{ url_for('static', filename='images/imagem1.jpg') }}" alt="sem capa">
-          {% endif %}
+          <img class="card-img-top cover-img" src="{{ media_src(comic.cover_image or 'images/imagem1.jpg') }}" alt="{{ comic.name }}">
           <div class="card-body d-flex flex-column">
             <h3 class="h6">{{ comic.name }} #{{ comic.edition_number }}</h3>
             <p class="small text-secondary">{{ comic.publisher or 'Editora não informada' }}</p>

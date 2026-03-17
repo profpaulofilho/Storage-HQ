@@ -9,6 +9,7 @@ import sqlite3
 from functools import wraps
 from pathlib import Path
 from uuid import uuid4
+from urllib.parse import urlparse, parse_qs
 
 from flask import (
     Flask,
@@ -90,7 +91,8 @@ def register_hooks(app: Flask):
         return {
             'app_title': app.config['APP_TITLE'],
             'current_user': g.get('user'),
-            'stats': stats
+            'stats': stats,
+            'media_src': media_src,
         }
 
 
@@ -160,7 +162,7 @@ def register_routes(app: Flask):
             name = request.form.get('name', '').strip()
             cover = None
             try:
-                cover = save_upload(request.files.get('cover_image'), subdir='collections')
+                cover = resolve_image_input(request, subdir='collections')
             except ValueError as exc:
                 flash(str(exc), 'danger')
                 return render_template('collection_form.html', collection=None)
@@ -186,7 +188,7 @@ def register_routes(app: Flask):
         if request.method == 'POST':
             name = request.form.get('name', '').strip()
             try:
-                new_cover = save_upload(request.files.get('cover_image'), subdir='collections')
+                new_cover = resolve_image_input(request, subdir='collections')
             except ValueError as exc:
                 flash(str(exc), 'danger')
                 return render_template('collection_form.html', collection=collection)
@@ -239,7 +241,7 @@ def register_routes(app: Flask):
         if request.method == 'POST':
             try:
                 data = parse_comic_form(request)
-                data['cover_image'] = save_upload(request.files.get('cover_image'), subdir='comics')
+                data['cover_image'] = resolve_image_input(request, subdir='comics')
             except ValueError as exc:
                 flash(str(exc), 'danger')
                 return render_template('comic_form.html', comic=None, collection=collection)
@@ -265,7 +267,7 @@ def register_routes(app: Flask):
         if request.method == 'POST':
             try:
                 data = parse_comic_form(request)
-                new_cover = save_upload(request.files.get('cover_image'), subdir='comics')
+                new_cover = resolve_image_input(request, subdir='comics')
             except ValueError as exc:
                 flash(str(exc), 'danger')
                 return render_template('comic_form.html', comic=comic, collection=collection)
@@ -618,6 +620,46 @@ def get_stats():
 
 def allowed_file(filename: str):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def normalize_external_image_url(value: str | None):
+    if not value:
+        return None
+    value = value.strip()
+    if not value:
+        return None
+
+    parsed = urlparse(value)
+    if parsed.scheme not in {'http', 'https'}:
+        raise ValueError('Informe uma URL de imagem válida começando com http:// ou https://.')
+
+    if 'drive.google.com' in parsed.netloc:
+        file_id = parse_qs(parsed.query).get('id', [None])[0]
+        if not file_id and '/file/d/' in parsed.path:
+            parts = parsed.path.split('/file/d/')[-1].split('/')
+            file_id = parts[0] if parts else None
+        if file_id:
+            return f'https://drive.google.com/uc?id={file_id}'
+
+    return value
+
+
+def resolve_image_input(req, subdir='misc'):
+    uploaded = save_upload(req.files.get('cover_image'), subdir=subdir)
+    if uploaded:
+        return uploaded
+    return normalize_external_image_url(req.form.get('cover_image_url'))
+
+
+def media_src(path: str | None):
+    if not path:
+        return url_for('static', filename='images/comic_collage.jpg')
+    if isinstance(path, str) and path.startswith(('http://', 'https://')):
+        return path
+    cleaned = path.lstrip('/')
+    if cleaned.startswith('uploads/'):
+        return url_for('uploaded_file', filename=cleaned)
+    return url_for('static', filename=cleaned)
 
 
 def save_upload(file_storage, subdir='misc'):
